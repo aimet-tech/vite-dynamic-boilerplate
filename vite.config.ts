@@ -1,6 +1,7 @@
 import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vitest/config'
+import removeTestIdAttribute from 'rollup-plugin-jsx-remove-attributes'
 import tsconfigPaths from 'vite-tsconfig-paths'
+import { defineConfig } from 'vitest/config'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -8,21 +9,12 @@ export default defineConfig({
     sourcemap: true // Source map generation must be turned on
   },
   plugins: [
-    react({
-      babel: {
-        env: {
-          production: {
-            plugins: [
-              [
-                'babel-plugin-jsx-remove-data-test-id',
-                { attributes: ['data-testid', 'data-test-id'] }
-              ]
-            ]
-          }
-        },
-        babelrc: false,
-        configFile: false
-      }
+    react(),
+    removeTestIdAttribute({
+      include: [/\.[tj]sx$/], //default
+      exclude: ['**/node_modules/**'], // default
+      attributes: ['data-testid', 'data-test-id'], // remove test attributes from jsx
+      usage: 'vite' // Must specify 'vite'
     }),
     tsconfigPaths()
   ],
